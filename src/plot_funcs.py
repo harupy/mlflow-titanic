@@ -9,7 +9,7 @@ sns.set()
 DPI = 300
 
 
-def plot_corr_matrix(corr, fp):
+def corr_matrix(corr, fp):
   fig, ax = plt.subplots()
   mask = np.zeros_like(corr, dtype=np.bool)
   mask[np.triu_indices_from(mask, k=1)] = True
@@ -22,7 +22,7 @@ def plot_corr_matrix(corr, fp):
   plt.close(fig)
 
 
-def plot_confusion_matrix(cm, fp, norm_axis=1):
+def confusion_matrix(cm, fp, norm_axis=1):
   """
   [TN, FP]
   [FN, TP]
@@ -47,7 +47,7 @@ def plot_confusion_matrix(cm, fp, norm_axis=1):
   plt.close(fig)
 
 
-def plot_metric(metrics, fp):
+def metric(metrics, fp):
   fig, ax = plt.subplots()
   for idx, data in enumerate(metrics):
     line = ax.plot(data['values'], label='fold{}'.format(idx), zorder=1)[0]
@@ -62,7 +62,7 @@ def plot_metric(metrics, fp):
   plt.close(fig)
 
 
-def plot_feature_importance(features, feature_importances, title, fp):
+def feature_importance(features, feature_importances, title, fp):
   fig, ax = plt.subplots()
   idxes = np.argsort(feature_importances)[::-1]
   y = np.arange(len(feature_importances))
@@ -77,7 +77,7 @@ def plot_feature_importance(features, feature_importances, title, fp):
   plt.close(fig)
 
 
-def plot_scores(scores, fp):
+def scores(scores, fp):
   array = np.array([v for v in scores.values()]).reshape((2, 2))
   annot = np.array(['{}: {}'.format(k, round(v, 3)) for k, v in scores.items()]).reshape((2, 2))
   fig, ax = plt.subplots()
@@ -93,7 +93,7 @@ def plot_scores(scores, fp):
   plt.close(fig)
 
 
-def plot_roc_curve(fpr, tpr, fp):
+def roc_curve(fpr, tpr, fp):
   fig, ax = plt.subplots()
   ax.plot(fpr, tpr)
   ax.plot([0, 1], [0, 1], 'k:')
@@ -105,7 +105,7 @@ def plot_roc_curve(fpr, tpr, fp):
   plt.close(fig)
 
 
-def plot_pr_curve(pre, rec, fp):
+def pr_curve(pre, rec, fp):
   fig, ax = plt.subplots()
   ax.plot(pre, rec)
   ax.set_xlabel('Recall')
@@ -114,12 +114,3 @@ def plot_pr_curve(pre, rec, fp):
   fig.tight_layout()
   fig.savefig(fp, dpi=DPI)
   plt.close(fig)
-
-
-def log_plot(args, plot_fn, fp):
-  if not isinstance(args, (tuple)):
-    args = (args, )
-  plot_fn(*args, fp)
-  mlflow.log_artifact(fp)
-  os.remove(fp)
-  print(f'Saved {fp}')

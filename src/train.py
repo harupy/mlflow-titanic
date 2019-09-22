@@ -1,18 +1,12 @@
 
-from plot_funcs import (plot_confusion_matrix,
-                        plot_corr_matrix,
-                        plot_feature_importance,
-                        plot_metric,
-                        plot_roc_curve,
-                        plot_pr_curve,
-                        plot_scores,
-                        log_plot,
-                        )
-from config import PROCESSED_TRAIN_PATH
-from utils import print_devider
-import mlflow
-import lightgbm as lgbm
-from sklearn.model_selection import StratifiedKFold
+
+import os
+import warnings
+import pickle
+from collections import defaultdict
+
+import numpy as np
+import pandas as pd
 from sklearn.metrics import (accuracy_score,
                              precision_score,
                              recall_score,
@@ -20,13 +14,13 @@ from sklearn.metrics import (accuracy_score,
                              confusion_matrix,
                              roc_curve,
                              precision_recall_curve)
-import numpy as np
-import pandas as pd
-import os
-import warnings
-import pickle
-from collections import defaultdict
-warnings.filterwarnings('ignore')
+from sklearn.model_selection import StratifiedKFold
+import lightgbm as lgbm
+import mlflow
+
+import plot_funcs as pf
+from utils import print_devider
+from config import PROCESSED_TRAIN_PATH
 
 
 def devide_by_sum(x):
@@ -40,6 +34,15 @@ def get_scores(y_true, y_pred):
     'recall': recall_score(y_true, y_pred),
     'f1': f1_score(y_true, y_pred),
   }
+
+
+def log_plot(args, plot_fn, fp):
+  if not isinstance(args, (tuple)):
+    args = (args, )
+  plot_fn(*args, fp)
+  mlflow.log_artifact(fp)
+  os.remove(fp)
+  print(f'Saved {fp}')
 
 
 def train_model(X, y, params, exp_path):
@@ -69,7 +72,7 @@ def train_model(X, y, params, exp_path):
 
   with mlflow.start_run() as run:
     corr = pd.concat((X, y), axis=1).corr()
-    log_plot(corr, plot_corr_matrix, 'correlation_matrix.png')
+    log_plot(corr, pf.corr_matrix, 'correlation_matrix.png')
 
     for fold_no, (idx_train, idx_valid) in enumerate(skf.split(X, y)):
       print_devider(f'Fold: {fold_no}')
@@ -124,29 +127,29 @@ def train_model(X, y, params, exp_path):
     print_devider('Saving plots')
 
     # scores
-    log_plot(scores, plot_scores, fp='scores.png')
+    log_plot(scores, pf.scores, fp='scores.png')
 
     # feature importance
     features = np.array(model.booster_.feature_name())
     log_plot((features, feature_importances_split, 'Feature Importance: split'),
-             plot_feature_importance, 'feature_importance_split.png')
+             pf.feature_importance, 'feature_importance_split.png')
     log_plot((features, feature_importances_gain, 'Feature Importance: gain'),
-             plot_feature_importance, 'feature_importance_gain.png')
+             pf.feature_importance, 'feature_importance_gain.png')
 
     # train history
-    log_plot(metrics, plot_metric, 'metric_history.png')
+    log_plot(metrics, pf.metric, 'metric_history.png')
 
     # confusion matrix
     cm = confusion_matrix(y, y_pred)
-    log_plot(cm, plot_confusion_matrix, 'confusion_matrix.png')
+    log_plot(cm, pf.confusion_matrix, 'confusion_matrix.png')
 
     # roc curve
     fpr, tpr, _ = roc_curve(y, y_proba)
-    log_plot((fpr, tpr), plot_roc_curve, 'roc_curve.png')
+    log_plot((fpr, tpr), pf.roc_curve, 'roc_curve.png')
 
     # precision-recall curve
     pre, rec, _ = precision_recall_curve(y, y_proba)
-    log_plot((pre, rec), plot_pr_curve, 'pr_curve.png')
+    log_plot((pre, rec), pf.pr_curve, 'pr_curve.png')
 
     # pickle trained models
     models_path = 'models.pkl'
@@ -158,6 +161,8 @@ def train_model(X, y, params, exp_path):
 
 
 def main():
+  warnings.filterwarnings('ignore')
+
   print(os.listdir('data'))
   train = pd.read_pickle(PROCESSED_TRAIN_PATH)
 
