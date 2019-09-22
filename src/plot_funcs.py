@@ -25,14 +25,16 @@ def confusion_matrix(cm, fp, norm_axis=1):
   [TN, FP]
   [FN, TP]
   """
+
+  cm_norm = cm / cm.sum(axis=norm_axis, keepdims=True)
   TN, FP, FN, TP = map(str, cm.ravel())
+  TN_norm, FP_norm, FN_norm, TP_norm = map(lambda x: str(round(x, 2)), cm_norm.ravel())
   annot = np.array([
-    ['TN: ' + TN, 'FP: ' + FP],
-    ['FN: ' + FN, 'TP: ' + TP]
+    [f'TN: {TN}\n({TN_norm})', f'FP: {FP}\n({FP_norm})'],
+    [f'FN: {FN}\n({FN_norm})', f'TP: {TP}\n({TP_norm})']
   ])
 
   fig, ax = plt.subplots()
-  cm_norm = cm / cm.sum(axis=norm_axis, keepdims=True)
   sns.heatmap(cm_norm, cmap='Blues', vmin=0, vmax=1,
               annot=annot, fmt='s', annot_kws={'fontsize': 15},
               linewidths=0.2, cbar=True, square=True, ax=ax)
