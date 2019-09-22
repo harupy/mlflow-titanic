@@ -9,6 +9,7 @@ from plot_funcs import (plot_confusion_matrix,
                         log_plot,
                         )
 from config import PROCESSED_TRAIN_PATH
+from utils import print_devider
 import mlflow
 import lightgbm as lgbm
 from sklearn.model_selection import StratifiedKFold
@@ -39,10 +40,6 @@ def get_scores(y_true, y_pred):
     'recall': recall_score(y_true, y_pred),
     'f1': f1_score(y_true, y_pred),
   }
-
-
-def print_devider(title):
-  print('\n{} {} {}\n'.format('-' * 25, title, '-' * 25))
 
 
 def train_model(X, y, params, exp_path):
