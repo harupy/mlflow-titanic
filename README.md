@@ -16,6 +16,9 @@ python src/preprocess.py
 
 # train model
 python src/train.py
+
+# predict with test data
+python src/predict.py
 ```
 
 ## Export Environment
