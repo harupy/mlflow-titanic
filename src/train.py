@@ -4,6 +4,7 @@ import os
 import warnings
 import pickle
 from collections import defaultdict
+import tempfile
 
 import numpy as np
 import pandas as pd
@@ -36,13 +37,14 @@ def get_scores(y_true, y_pred):
   }
 
 
-def log_plot(args, plot_fn, fp):
+def log_plot(args, plot_func, fn):
   if not isinstance(args, (tuple)):
-    args = (args, )
-  plot_fn(*args, fp)
-  mlflow.log_artifact(fp)
-  os.remove(fp)
-  print(f'Saved {fp}')
+    args = (args,)
+
+  with tempfile.NamedTemporaryFile(suffix=os.path.splitext(fn)[-1]) as temp_file:
+    plot_func(*args, temp_file)
+    mlflow.log_artifact(temp_file.name, fn)
+    print(f'Logged {fn}')
 
 
 def train_model(X, y, params, exp_path):
@@ -127,7 +129,7 @@ def train_model(X, y, params, exp_path):
     print_devider('Saving plots')
 
     # scores
-    log_plot(scores, pf.scores, fp='scores.png')
+    log_plot(scores, pf.scores, 'scores.png')
 
     # feature importance
     features = np.array(model.booster_.feature_name())
