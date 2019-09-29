@@ -7,6 +7,22 @@ sns.set()
 DPI = 300
 
 
+def label_share(share, fp):
+    share_norm = share / share.sum()
+    fig, ax = plt.subplots()
+    bar = sns.barplot(share_norm.index, share_norm.values)
+    for idx, p in enumerate(bar.patches):
+        bar.annotate('{:.2f}\n({})'.format(share_norm[idx], share[idx]),
+                     (p.get_x() + p.get_width() / 2, p.get_height() / 2),
+                     ha='center', va='center', color='white', fontsize='large')
+    ax.set_xlabel('Label')
+    ax.set_ylabel('Share')
+    ax.set_title('Label Share')
+    fig.tight_layout()
+    fig.savefig(fp, dpi=DPI)
+    plt.close(fig)
+
+
 def corr_matrix(corr, fp):
     fig, ax = plt.subplots()
     mask = np.zeros_like(corr, dtype=np.bool)

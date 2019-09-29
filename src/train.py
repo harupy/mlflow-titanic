@@ -74,6 +74,7 @@ def train_model(X, y, params, exp_path):
     with mlflow.start_run() as run:
         corr = pd.concat((X, y), axis=1).corr()
         log_plot(corr, pf.corr_matrix, 'correlation_matrix.png')
+        log_plot(y.value_counts(), pf.label_share, 'label_share.png')
 
         for fold_no, (idx_train, idx_valid) in enumerate(skf.split(X, y)):
             print_devider(f'Fold: {fold_no}')
