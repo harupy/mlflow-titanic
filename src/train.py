@@ -160,6 +160,8 @@ def train_model(X, y, params, exp_path):
             mlflow.log_param('model_path', os.path.join(run.info.artifact_uri, models_path))
             os.remove(models_path)
 
+    return run.info.experiment_id, run.info.run_uuid
+
 
 def main():
     warnings.filterwarnings('ignore')
@@ -194,8 +196,10 @@ def main():
       }
     }
 
-    train_model(X, y, params, 'titanic')
-    print_devider('MLFlow UI (Ctrl-C to quit)')
+    experiment_id, run_uuid = train_model(X, y, params, 'titanic')
+    print_devider('MLflow UI')
+    print('Run URL: http://127.0.0.1:5000/#/experiments/{0}/runs/{1}\n'
+          .format(experiment_id, run_uuid))
     os.system('mlflow ui')
 
 
