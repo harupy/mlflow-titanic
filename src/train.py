@@ -13,7 +13,9 @@ from sklearn.metrics import (accuracy_score,
                              f1_score,
                              confusion_matrix,
                              roc_curve,
-                             precision_recall_curve)
+                             roc_auc_score,
+                             precision_recall_curve,
+                             average_precision_score)
 from sklearn.model_selection import StratifiedKFold
 import lightgbm as lgbm
 import mlflow
@@ -147,11 +149,13 @@ def train_model(X, y, params, exp_path):
 
         # roc curve
         fpr, tpr, _ = roc_curve(y, y_proba)
-        log_plot((fpr, tpr), pf.roc_curve, 'roc_curve.png')
+        roc_auc = roc_auc_score(y, y_pred)
+        log_plot((fpr, tpr, roc_auc), pf.roc_curve, 'roc_curve.png')
 
         # precision-recall curve
         pre, rec, _ = precision_recall_curve(y, y_proba)
-        log_plot((pre, rec), pf.pr_curve, 'pr_curve.png')
+        pr_auc = average_precision_score(y, y_pred)
+        log_plot((pre, rec, pr_auc), pf.pr_curve, 'pr_curve.png')
 
         # pickle trained models
         models_path = 'models.pkl'

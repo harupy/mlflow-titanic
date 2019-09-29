@@ -109,24 +109,24 @@ def scores(scores, fp):
     plt.close(fig)
 
 
-def roc_curve(fpr, tpr, fp):
+def roc_curve(fpr, tpr, auc, fp):
     fig, ax = plt.subplots()
     ax.plot(fpr, tpr)
     ax.plot([0, 1], [0, 1], 'k:')
     ax.set_xlabel('FPR')
     ax.set_ylabel('TPR')
-    ax.set_title('ROC Curve')
+    ax.set_title(f'ROC Curve (AUC: {auc:.3f})')
     fig.tight_layout()
     fig.savefig(fp, dpi=DPI)
     plt.close(fig)
 
 
-def pr_curve(pre, rec, fp):
+def pr_curve(pre, rec, auc, fp):
     fig, ax = plt.subplots()
     ax.plot(pre, rec)
     ax.set_xlabel('Recall')
     ax.set_ylabel('Presision')
-    ax.set_title('Precision-Recall Curve')
+    ax.set_title(f'Precision-Recall Curve (AUC: {auc:.3f})')
     fig.tight_layout()
     fig.savefig(fp, dpi=DPI)
     plt.close(fig)
