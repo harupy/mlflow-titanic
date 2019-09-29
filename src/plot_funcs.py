@@ -95,7 +95,7 @@ def feature_importance(features, feature_importances, title, fp):
 
 def scores(scores, fp):
     array = np.array([v for v in scores.values()]).reshape((2, 2))
-    annot = np.array(['{}: {}'.format(k, round(v, 3)) for k, v in scores.items()]).reshape((2, 2))
+    annot = np.array(['{}: {:.3f}'.format(k, v) for k, v in scores.items()]).reshape((2, 2))
     fig, ax = plt.subplots()
     sns.heatmap(array, cmap='Blues', vmin=0, vmax=1,
                 annot=annot, fmt='s', annot_kws={'fontsize': 'large'},
