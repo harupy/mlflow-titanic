@@ -43,11 +43,11 @@ def confusion_matrix(cm, fp, norm_axis=1):
     """
 
     cm_norm = cm / cm.sum(axis=norm_axis, keepdims=True)
-    TN, FP, FN, TP = map(str, cm.ravel())
-    TN_norm, FP_norm, FN_norm, TP_norm = map(lambda x: str(round(x, 2)), cm_norm.ravel())
+    TN, FP, FN, TP = cm.ravel()
+    TN_norm, FP_norm, FN_norm, TP_norm = cm_norm.ravel()
     annot = np.array([
-        [f'TN: {TN}\n({TN_norm})', f'FP: {FP}\n({FP_norm})'],
-        [f'FN: {FN}\n({FN_norm})', f'TP: {TP}\n({TP_norm})']
+        [f'TN: {TN}\n({TN_norm:.3f})', f'FP: {FP}\n({FP_norm:.3f})'],
+        [f'FN: {FN}\n({FN_norm:.3f})', f'TP: {TP}\n({TP_norm:.3f})']
     ])
 
     fig, ax = plt.subplots()
