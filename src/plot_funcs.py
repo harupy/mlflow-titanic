@@ -52,7 +52,7 @@ def confusion_matrix(cm, fp, norm_axis=1):
 
     fig, ax = plt.subplots()
     sns.heatmap(cm_norm, cmap='Blues', vmin=0, vmax=1,
-                annot=annot, fmt='s', annot_kws={'fontsize': 15},
+                annot=annot, fmt='s', annot_kws={'fontsize': 'large'},
                 linewidths=0.2, cbar=True, square=True, ax=ax)
     ax.set_xlabel('Predicted')
     ax.set_ylabel('Actual')
@@ -98,7 +98,7 @@ def scores(scores, fp):
     annot = np.array(['{}: {}'.format(k, round(v, 3)) for k, v in scores.items()]).reshape((2, 2))
     fig, ax = plt.subplots()
     sns.heatmap(array, cmap='Blues', vmin=0, vmax=1,
-                annot=annot, fmt='s', annot_kws={'fontsize': 15},
+                annot=annot, fmt='s', annot_kws={'fontsize': 'large'},
                 linewidths=0.1, cbar=True, square=True, ax=ax)
     ax.set_xticks([])
     ax.set_yticks([])
